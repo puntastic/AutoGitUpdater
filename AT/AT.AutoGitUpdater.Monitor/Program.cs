@@ -16,7 +16,6 @@ namespace AT.AutoGitUpdater.Monitor
         {
 
 
-
             //run the configured git command in the chosen directory, killing the console after the command is run
             List<Process> processes; // = new System.Diagnostics.Process();
             
@@ -37,7 +36,7 @@ namespace AT.AutoGitUpdater.Monitor
                     if (Path.GetDirectoryName(targetProcess.Modules[0].FileName) == Path.GetDirectoryName(Process.GetCurrentProcess().Modules[0].FileName))
                     {
                         Console.WriteLine("\nAttaching to existing AutoGitUpdater");
-                        watchedProcess = processes[0];
+                        watchedProcess = targetProcess;
                     }
                 }
 
