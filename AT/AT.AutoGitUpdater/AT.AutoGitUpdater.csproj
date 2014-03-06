@@ -105,7 +105,7 @@
     <None Include="AT.AutoGitUpdater_TemporaryKey.pfx" />
     <None Include="packages.config" />
     <None Include="Properties\app.manifest" />
-    <None Include="UpdaterConfiguration.json">
+    <None Include="ExampleUpdaterConfiguration.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>

@@ -122,8 +122,9 @@ namespace AT.AutoGitUpdater
             
             UpdaterConfiguration updaterConfig = null;
 
+            string configFileName = File.Exists("UpdaterConfiguration.json") ? "UpdaterConfiguration.json" : "ExampleUpdaterConfiguration.json";
 
-            using (StreamReader configReader = new StreamReader("UpdaterConfiguration.json"))
+            using (StreamReader configReader = new StreamReader(configFileName))
                 updaterConfig = JsonConvert.DeserializeObject<UpdaterConfiguration>(configReader.ReadToEnd());
 
             using (RedisMonitor rMonitor = new RedisMonitor())
