@@ -26,7 +26,11 @@ namespace AT.AutoGitUpdater
             }
             _started = true;
 
-            CreateAndStartRedisListener();
+            CreateAndStartRedisListener((channel, message) =>
+            {
+                Console.Write("\nRecieved From: {0} => {1}\n", channel, message);
+                Update();
+            });
         }
 
         /// <summary>
@@ -52,15 +56,11 @@ namespace AT.AutoGitUpdater
             }
         }
 
-        private void CreateAndStartRedisListener()
+        private void CreateAndStartRedisListener(EventHandler<string> onMessageDelegate)
         {
             _redisListener = new RedisListener(_config.RedisConfiguration);
 
-            _redisListener.OnRedisMessageValidated += (channel, message) =>
-            {
-                Console.Write("\nRecieved From: {0} => {1}\n", channel, message);
-                Update();
-            };
+            _redisListener.OnRedisMessageValidated += onMessageDelegate;
             _redisListener.Start();
         }
 
@@ -76,6 +76,9 @@ namespace AT.AutoGitUpdater
             }
             Console.WriteLine("End of Git");
         }
+
+
+
 
         private void KillAllProcessesByNameAndDirectory(string directory, string processName)
         {
