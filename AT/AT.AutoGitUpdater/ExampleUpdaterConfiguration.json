@@ -1,18 +1,28 @@
 {
-	"RedisHost":"gitupdaterchannels.fqylv1.0001.usw1.cache.amazonaws.com",
-	"RedisPort":6379,
-	"RedisPassword":"",
-	"RedisMessageChannel":"gitDeployment",
-	"RedisMessageRepoName":"rndDeploy",
-
-	"KillApplicationBeforeUpdate":true,
-	"ApplicationToKillBeforeUpdate":"cmd",
-	"StartApplicationAfterUpdate":true,
-	"ApplicationToStartAfterUpdate":"c:\\cmd.exe",
+	"RedisConfiguration":
+	{
+		"RedisHost":"localhost",
+		"RedisPort":6379,
+		"RedisPassword":"",
+		"RedisMessageChannel":"gitDeployment",
+		"RedisMessageMustContain":"rndDeploy"
+	},
+	"TargetApplicationOptions":
+	{
+		"Directory":"c:\\rndDeploy\\",
+		"KillApplicationBeforeUpdate":true,
+		"ApplicationToKillBeforeUpdate":"GitTest",
+		"StartApplicationAfterUpdate":true,
+		"ApplicationToStartAfterUpdate":"GitTest.exe"
+	},
+	"GitOptions":
+	{
+		"GitBashPath":"C:\\Program Files (x86)\\Git\\bin\\",
+		"GitBashEXE":"sh.exe",
+		"GitTimeout_Minutes":10,
+		"GitWorkingDirectory":"C:/rndDeploy",
+		"GitPullCommand":"git reset --hard; git clean -f -d; git pull"
+	}
 	
-	"GitBashPath":"C:\\Program Files (x86)\\Git\\bin\\",
-	"GitBashEXE":"sh.exe",
-	"GitTimeout_Minutes":10,
-	"GitWorkingDirectory":"C:/rndDeploy",
-	"GitPullCommand":"git reset --hard; git clean -f -d; git pull"
+	
 }
