@@ -11,7 +11,7 @@ namespace AT.AutoGitUpdater
 {
     class RedisListener : IDisposable
     {
-        public EventHandler<string> OnRedisMessageValidated;
+        public Action<string, string> OnRedisMessageRecieved;
         Thread redisThread;
 
         RedisConfiguation _config;
@@ -30,7 +30,7 @@ namespace AT.AutoGitUpdater
             _redisClient = CreateClient();
 
             _redisSubscriber = (RedisSubscription)_redisClient.CreateSubscription();
-            _redisSubscriber.OnMessage += ValidateMessage;
+            _redisSubscriber.OnMessage += (string channel, string message) => OnRedisMessageRecieved.Invoke(channel, message);
 
             CreateAndStartSubscriptionThread();
         }
@@ -72,14 +72,6 @@ namespace AT.AutoGitUpdater
                 {
                     throw ex;
                 }
-            }
-        }
-
-        private void ValidateMessage(string channel, string message)
-        {
-            if (message.Contains(_config.RedisMessageMustContain) && OnRedisMessageValidated != null)
-            {
-                OnRedisMessageValidated.Invoke(channel, message);
             }
         }
 
