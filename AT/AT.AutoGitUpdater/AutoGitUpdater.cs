@@ -22,7 +22,7 @@ namespace AT.AutoGitUpdater
         {
             if (_started)
             {
-                throw new Exception("Can only start a ProcessMonitor once");
+                throw new Exception("Can only start a " + this.GetType().Name + " once"); //for indiscriminate copy-pasta
             }
             _started = true;
 
