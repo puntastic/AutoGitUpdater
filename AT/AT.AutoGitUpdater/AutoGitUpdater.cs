@@ -22,7 +22,8 @@ namespace AT.AutoGitUpdater
         {
             if (_started)
             {
-                throw new Exception("Can only start a " + this.GetType().Name + " once"); //for indiscriminate copy-pasta
+                //for indiscriminate copy-pasta (NOTE: obfuscation will cause hell on GetType().Name...)
+                throw new Exception("Can only start a " + this.GetType().Name + " once"); 
             }
             _started = true;
 
@@ -35,17 +36,15 @@ namespace AT.AutoGitUpdater
         /// Update the configured directoy from git, killing/restarting an application if set to do so
         /// </summary>
         /// <param name="config">UpdaterConfiguration object to read settings from</param>
-        private void Update()
+        private void UpdateAndRestartProcess()
         {
-            if (_config.TargetApplicationOptions.KillApplicationBeforeUpdate)
-            {
-                Console.WriteLine("Killing Process");
-                KillAllProcessesByNameAndDirectory(_config.TargetApplicationOptions.Directory,
-                    _config.TargetApplicationOptions.ApplicationToKillBeforeUpdate);
-            }
+            KillTargetProcess();
+            RunGitUpdate();
+            StartTargetProcess();
+        }
 
-            RunGit();
-            
+        private void StartTargetProcess()
+        {
             if (_config.TargetApplicationOptions.StartApplicationAfterUpdate)
             {
                 Console.WriteLine("Starting Process");
@@ -54,12 +53,22 @@ namespace AT.AutoGitUpdater
             }
         }
 
+        private void KillTargetProcess()
+        {
+            if (_config.TargetApplicationOptions.KillApplicationBeforeUpdate)
+            {
+                Console.WriteLine("Killing Process");
+                KillAllProcessesByNameAndDirectory(_config.TargetApplicationOptions.Directory,
+                    _config.TargetApplicationOptions.ApplicationToKillBeforeUpdate);
+            }
+        }
+
         private void HandleRedisMessage(string channel, string message)
         {
             if (message.Contains(_config.RedisConfiguration.RedisMessageMustContain))
             {
                 Console.Write("\nRecieved From: {0} => {1}\n", channel, message);
-                Update();
+                UpdateAndRestartProcess();
             }
         }
 
@@ -69,7 +78,7 @@ namespace AT.AutoGitUpdater
             _redisListener.Start();
         }
 
-        private void RunGit()
+        private void RunGitUpdate()
         {
             Console.WriteLine("Start of Git");
             using (GitProcess git = new GitProcess(_config.GitOptions.GitBashPath + _config.GitOptions.GitBashEXE))
@@ -86,7 +95,7 @@ namespace AT.AutoGitUpdater
         {
             if (!Directory.Exists(directory))
             {
-                throw new FileNotFoundException("Could not find the directory of the application to kill");
+                throw new FileNotFoundException("Application directory does not exist");
             }
             Process.GetProcessesByName(processName).AsParallel().ForAll
             (
@@ -105,7 +114,7 @@ namespace AT.AutoGitUpdater
             Process.Start(Path.Combine(directory, executableName));
         }
 
-        
+
         bool _disposed = false;
         public void Dispose()
         {
@@ -115,18 +124,27 @@ namespace AT.AutoGitUpdater
 
         protected virtual void Dispose(bool disposing)
         {
-            if (!_disposed && disposing)
+            if (!_disposed)
             {
-                _disposed = true;
-                if (_redisListener != null)
+                if (disposing)
                 {
-                    _redisListener.Dispose();
+                    _disposed = true;
+                    if (_redisListener != null)
+                    {
+                        _redisListener.Dispose();
+                    }
                 }
+
+                //no unmanaged
+
+                _disposed = true;
             }
+
         }
         ~AutoGitUpdater()
         {
-            Dispose(true); ;
+            //true disposable pattern...
+            Dispose(false);
         }
     }
 }
